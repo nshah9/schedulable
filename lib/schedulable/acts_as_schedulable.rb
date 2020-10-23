@@ -49,7 +49,8 @@ module Schedulable
           
           ActsAsSchedulable.add_occurrences_association(self, occurrences_association)
           
-          after_save "build_#{occurrences_association}"
+          # after_save "build_#{occurrences_association}"
+          set_callback :save, :before, "build_#{occurrences_association}".to_sym
  
           self.class.instance_eval do
             define_method("build_#{occurrences_association}") do 
@@ -151,7 +152,7 @@ module Schedulable
                   end
                 else
                   # Create new record
-                  if !occurrences_records.create(date: occurrence.to_datetime)
+                  if !occurrences_records.build(date: occurrence.to_datetime)
                     puts 'An error occurred while creating an occurrence record'
                   end
                 end
